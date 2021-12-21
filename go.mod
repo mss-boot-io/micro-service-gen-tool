@@ -5,7 +5,6 @@ go 1.17
 require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/google/go-github/v41 v41.0.0
-	github.com/karrick/godirwalk v1.16.1
 	github.com/spf13/viper v1.10.1
 	github.com/zealic/xignore v0.3.3
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
@@ -46,5 +45,3 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/lwnmengjing/goignorescanner => ../../lwnmengjing/goignorescanner
