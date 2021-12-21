@@ -9,6 +9,7 @@ package pkg
 
 import (
 	"bytes"
+	"github.com/zealic/xignore"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,24 +18,30 @@ import (
 	"text/template"
 )
 
+var TemplateIgnore = ".templateignore"
+var TemplateParseIgnore = ".templateparseignore"
+
 type TemplateConfig struct {
 	Service     string        `yaml:"service"`
 	TemplateUrl string        `yaml:"templateUrl"`
 	CreateRepo  bool          `yaml:"createRepo"`
 	Destination string        `yaml:"destination"`
 	Github      *GithubConfig `yaml:"github"`
-	Data        interface{}   `yaml:"data"`
+	Params      interface{}   `yaml:"params"`
 	Ignore      []string      `yaml:"ignore"`
 }
 
 // Generator generate operator
 type Generator struct {
-	TemplatePath    string
-	DestinationPath string
-	Cfg             interface{}
-	GithubConfig    *GithubConfig
-	accessToken     string
-	Ignore          []string
+	TemplatePath             string
+	DestinationPath          string
+	Cfg                      interface{}
+	GithubConfig             *GithubConfig
+	accessToken              string
+	TemplateIgnoreDirs       []string
+	TemplateIgnoreFiles      []string
+	TemplateParseIgnoreDirs  []string
+	TemplateParseIgnoreFiles []string
 }
 
 // Generate example
@@ -51,20 +58,41 @@ func Generate(c *TemplateConfig) (err error) {
 		log.Println(err)
 		return err
 	}
+	defer os.RemoveAll(templatePath)
 	if !c.CreateRepo {
 		c.Github = nil
 	}
-	defer os.RemoveAll(templatePath)
 	//delete destinationPath
 	_ = os.RemoveAll(c.Destination)
 	_ = os.RemoveAll(filepath.Join(templatePath, ".git"))
+	templateResultIgnore, err := xignore.DirMatches(templatePath, &xignore.MatchesOptions{
+		Ignorefile: TemplateIgnore,
+		Nested:     true, // Handle nested ignorefile
+	})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	_ = os.RemoveAll(filepath.Join(templatePath, TemplateIgnore))
+	templateParseResultIgnore, err := xignore.DirMatches(templatePath, &xignore.MatchesOptions{
+		Ignorefile: TemplateParseIgnore,
+		Nested:     true,
+	})
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	_ = os.RemoveAll(filepath.Join(templatePath, TemplateParseIgnore))
 	t := &Generator{
-		TemplatePath:    templatePath,
-		DestinationPath: c.Destination,
-		Cfg:             c.Data,
-		GithubConfig:    c.Github,
-		accessToken:     accessToken,
-		Ignore:          c.Ignore,
+		TemplatePath:             templatePath,
+		DestinationPath:          c.Destination,
+		Cfg:                      c.Params,
+		GithubConfig:             c.Github,
+		accessToken:              accessToken,
+		TemplateIgnoreDirs:       templateResultIgnore.MatchedDirs,
+		TemplateIgnoreFiles:      templateResultIgnore.MatchedFiles,
+		TemplateParseIgnoreDirs:  templateParseResultIgnore.MatchedDirs,
+		TemplateParseIgnoreFiles: templateParseResultIgnore.MatchedFiles,
 	}
 	if err = t.Traverse(); err != nil {
 		log.Println(err)
@@ -88,6 +116,21 @@ func (e *Generator) Traverse() error {
 
 // TraverseFunc traverse callback
 func (e *Generator) TraverseFunc(path string, f os.DirEntry, err error) error {
+	// template ignore
+	if len(e.TemplateIgnoreDirs) > 0 {
+		for i := range e.TemplateIgnoreDirs {
+			if strings.Index(path, filepath.Join(e.TemplatePath, e.TemplateIgnoreDirs[i])) == 0 {
+				return nil
+			}
+		}
+	}
+	if len(e.TemplateIgnoreFiles) > 0 {
+		for i := range e.TemplateIgnoreFiles {
+			if filepath.Join(e.TemplatePath, e.TemplateIgnoreFiles[i]) == path {
+				return nil
+			}
+		}
+	}
 	templatePath := path
 	t := template.New(path)
 	t = template.Must(t.Parse(path))
@@ -105,17 +148,28 @@ func (e *Generator) TraverseFunc(path string, f os.DirEntry, err error) error {
 		}
 		return nil
 	}
-	if len(e.Ignore) > 0 {
-		for i := range e.Ignore {
-			if e.Ignore[i] == templatePath || e.Ignore[i] == filepath.Base(templatePath) {
-				//find file, then copy
-				_, err = FileCopy(templatePath, path)
-				if err != nil {
-					log.Println(err)
-				}
-				return err
+	var parseIgnore bool
+	// template parse ignore
+	if len(e.TemplateParseIgnoreDirs) > 0 {
+		for i := range e.TemplateParseIgnoreDirs {
+			if strings.Index(templatePath, filepath.Join(e.TemplatePath, e.TemplateParseIgnoreDirs[i])) == 0 {
+				parseIgnore = true
 			}
 		}
+	}
+	if !parseIgnore && len(e.TemplateParseIgnoreFiles) > 0 {
+		for i := range e.TemplateParseIgnoreFiles {
+			if filepath.Join(e.TemplatePath, e.TemplateParseIgnoreFiles[i]) == templatePath {
+				parseIgnore = true
+			}
+		}
+	}
+	if parseIgnore {
+		_, err = FileCopy(templatePath, path)
+		if err != nil {
+			log.Println(err)
+		}
+		return err
 	}
 	var rb []byte
 	if rb, err = ioutil.ReadFile(templatePath); err != nil {
