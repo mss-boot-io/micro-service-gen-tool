@@ -1,6 +1,6 @@
 service: proto-demo
 templateUrl: https://github.com/lwnmengjing/template-demo
-templateLocal: template-demo
+#templateLocal: template-demo
 createRepo: false
 destination: ./
 params:
