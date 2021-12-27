@@ -23,13 +23,14 @@ var TemplateIgnore = ".templateignore"
 var TemplateParseIgnore = ".templateparseignore"
 
 type TemplateConfig struct {
-	Service     string        `yaml:"service"`
-	TemplateUrl string        `yaml:"templateUrl"`
-	CreateRepo  bool          `yaml:"createRepo"`
-	Destination string        `yaml:"destination"`
-	Github      *GithubConfig `yaml:"github"`
-	Params      interface{}   `yaml:"params"`
-	Ignore      []string      `yaml:"ignore"`
+	Service       string        `yaml:"service"`
+	TemplateUrl   string        `yaml:"templateUrl"`
+	TemplateLocal string        `yaml:"templateLocal"`
+	CreateRepo    bool          `yaml:"createRepo"`
+	Destination   string        `yaml:"destination"`
+	Github        *GithubConfig `yaml:"github"`
+	Params        interface{}   `yaml:"params"`
+	Ignore        []string      `yaml:"ignore"`
 }
 
 func (e *TemplateConfig) OnChange() {
@@ -53,24 +54,30 @@ type Generator struct {
 //func Generate(url, destinationPath string, cfg interface{}, githubConfig *GithubConfig, accessToken string) error {
 //	templatePath := filepath.Base(url)
 func Generate(c *TemplateConfig) (err error) {
-	templatePath := filepath.Base(c.TemplateUrl)
+	var templatePath string
 	var accessToken string
 	if c.Github != nil {
 		accessToken = c.Github.Token
 	}
-	os.RemoveAll(templatePath)
-	err = GitClone(c.TemplateUrl, templatePath, false, accessToken)
-	if err != nil {
-		log.Println(err)
-		return err
+	if c.TemplateLocal != "" {
+		templatePath = c.TemplateLocal
+	} else {
+		templatePath = filepath.Base(c.TemplateUrl)
+		_ = os.RemoveAll(templatePath)
+		err = GitClone(c.TemplateUrl, templatePath, false, accessToken)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		//defer os.RemoveAll(templatePath)
 	}
-	defer os.RemoveAll(templatePath)
+
 	if !c.CreateRepo {
 		c.Github = nil
 	}
 	//delete destinationPath
 	_ = os.RemoveAll(c.Destination)
-	_ = os.RemoveAll(filepath.Join(templatePath, ".git"))
+	//_ = os.RemoveAll(filepath.Join(templatePath, ".git"))
 	templateResultIgnore, err := xignore.DirMatches(templatePath, &xignore.MatchesOptions{
 		Ignorefile: TemplateIgnore,
 		Nested:     true, // Handle nested ignorefile
@@ -79,7 +86,7 @@ func Generate(c *TemplateConfig) (err error) {
 		log.Println(err)
 		return err
 	}
-	_ = os.RemoveAll(filepath.Join(templatePath, TemplateIgnore))
+	//_ = os.RemoveAll(filepath.Join(templatePath, TemplateIgnore))
 	templateParseResultIgnore, err := xignore.DirMatches(templatePath, &xignore.MatchesOptions{
 		Ignorefile: TemplateParseIgnore,
 		Nested:     true,
@@ -88,7 +95,7 @@ func Generate(c *TemplateConfig) (err error) {
 		log.Println(err)
 		return err
 	}
-	_ = os.RemoveAll(filepath.Join(templatePath, TemplateParseIgnore))
+	//_ = os.RemoveAll(filepath.Join(templatePath, TemplateParseIgnore))
 	t := &Generator{
 		TemplatePath:             templatePath,
 		DestinationPath:          c.Destination,
@@ -122,10 +129,14 @@ func (e *Generator) Traverse() error {
 
 // TraverseFunc traverse callback
 func (e *Generator) TraverseFunc(path string, f os.DirEntry, err error) error {
+	switch filepath.Base(path) {
+	case TemplateIgnore, TemplateParseIgnore:
+		return nil
+	}
 	// template ignore
 	if len(e.TemplateIgnoreDirs) > 0 {
 		for i := range e.TemplateIgnoreDirs {
-			if strings.Index(path, filepath.Join(e.TemplatePath, e.TemplateIgnoreDirs[i])) == 0 {
+			if f.IsDir() && strings.Index(path, filepath.Join(e.TemplatePath, e.TemplateIgnoreDirs[i])) == 0 {
 				return nil
 			}
 		}

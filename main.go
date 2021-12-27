@@ -2,12 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"github.com/lwnmengjing/core-go/config/source/file"
 	"log"
 	"path/filepath"
 
 	"github.com/lwnmengjing/core-go/config"
+	"github.com/lwnmengjing/core-go/config/source/file"
 
 	"github.com/lwnmengjing/micro-service-gen-tool/pkg"
 )
@@ -33,7 +32,7 @@ func main() {
 			file.NewSource(
 				file.WithPath(*configPath))))
 	if err != nil { // Handle errors reading the config file
-		panic(fmt.Errorf("Fatal error config file: %w \n", err))
+		log.Fatalf("Fatal error config file: %s \n", err.Error())
 	}
 	if err = config.Scan(&c); err != nil {
 		//if err = v.Unmarshal(&c); err != nil {
