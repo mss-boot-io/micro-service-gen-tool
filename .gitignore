@@ -53,6 +53,7 @@ hs_err_pid*
 *White*
 workspace
 src
+generate-tool
 
 ### config local ###
 *-dev.yaml

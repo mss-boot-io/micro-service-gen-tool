@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/lwnmengjing/core-go/config/source/file"
 	"log"
 	"path/filepath"
 
-	"github.com/spf13/viper"
+	"github.com/lwnmengjing/core-go/config"
 
 	"github.com/lwnmengjing/micro-service-gen-tool/pkg"
 )
@@ -19,20 +20,23 @@ func init() {
 var (
 	service     = flag.String("service", "", "generate service name")
 	templateUrl = flag.String("templateUrl", "", "from template")
-	config      = flag.String("config", "config.yml", "config file path")
+	configPath  = flag.String("config", "config.yml", "config file path")
 	createRepo  = flag.Bool("createRepo", false, "auto create repo to github")
 )
 
 func main() {
-	v := viper.New()
-	v.SetConfigFile(*config) // optionally look for config in the working directory
-	err := v.ReadInConfig()  // Find and read the config file
-	if err != nil {          // Handle errors reading the config file
+	var err error
+	var c pkg.TemplateConfig
+	config.DefaultConfig, err = config.NewConfig(
+		config.WithEntity(&c),
+		config.WithSource(
+			file.NewSource(
+				file.WithPath(*configPath))))
+	if err != nil { // Handle errors reading the config file
 		panic(fmt.Errorf("Fatal error config file: %w \n", err))
 	}
-
-	var c pkg.TemplateConfig
-	if err = v.Unmarshal(&c); err != nil {
+	if err = config.Scan(&c); err != nil {
+		//if err = v.Unmarshal(&c); err != nil {
 		log.Fatalln(err)
 	}
 	if *service != "" {

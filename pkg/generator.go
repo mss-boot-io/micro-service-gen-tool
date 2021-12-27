@@ -9,6 +9,7 @@ package pkg
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/zealic/xignore"
 	"io/ioutil"
 	"log"
@@ -29,6 +30,10 @@ type TemplateConfig struct {
 	Github      *GithubConfig `yaml:"github"`
 	Params      interface{}   `yaml:"params"`
 	Ignore      []string      `yaml:"ignore"`
+}
+
+func (e *TemplateConfig) OnChange() {
+	fmt.Println("config changed")
 }
 
 // Generator generate operator
@@ -53,6 +58,7 @@ func Generate(c *TemplateConfig) (err error) {
 	if c.Github != nil {
 		accessToken = c.Github.Token
 	}
+	os.RemoveAll(templatePath)
 	err = GitClone(c.TemplateUrl, templatePath, false, accessToken)
 	if err != nil {
 		log.Println(err)
