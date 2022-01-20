@@ -54,7 +54,8 @@ func GitRemote(url, directory string) error {
 func GitClone(url, directory string, noCheckout bool, accessToken string) error {
 	auth := &http.BasicAuth{}
 	if accessToken != "" {
-		auth.Username = "123"
+		//fixme username not valid
+		auth.Username = "username"
 		auth.Password = accessToken
 	}
 	_, err := git.PlainClone(directory, false, &git.CloneOptions{

@@ -77,7 +77,7 @@ func Generate(c *TemplateConfig) (err error) {
 	}
 	//delete destinationPath
 	_ = os.RemoveAll(c.Destination)
-	//_ = os.RemoveAll(filepath.Join(templatePath, ".git"))
+	_ = os.RemoveAll(filepath.Join(templatePath, ".git"))
 	templateResultIgnore, err := xignore.DirMatches(templatePath, &xignore.MatchesOptions{
 		Ignorefile: TemplateIgnore,
 		Nested:     true, // Handle nested ignorefile
