@@ -10,13 +10,14 @@ package pkg
 import (
 	"bytes"
 	"fmt"
-	"github.com/zealic/xignore"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/zealic/xignore"
 )
 
 var TemplateIgnore = ".templateignore"
@@ -69,7 +70,7 @@ func Generate(c *TemplateConfig) (err error) {
 			log.Println(err)
 			return err
 		}
-		//defer os.RemoveAll(templatePath)
+		defer os.RemoveAll(templatePath)
 	}
 
 	if !c.CreateRepo {
@@ -200,8 +201,13 @@ func (e *Generator) TraverseFunc(path string, f os.DirEntry, err error) error {
 		log.Println(err)
 		return err
 	}
+	fi, err := f.Info()
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 	// create file
-	err = FileCreate(buffer, path)
+	err = FileCreate(buffer, path, fi.Mode())
 	if err != nil {
 		log.Println(err)
 		return err

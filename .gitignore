@@ -60,3 +60,6 @@ generate-tool
 *-dev.yml
 *-local.yml
 *-local.yaml
+
+### demo template ###
+*demo*

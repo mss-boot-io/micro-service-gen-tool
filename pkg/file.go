@@ -31,8 +31,8 @@ func PathExist(addr string) bool {
 }
 
 // FileCreate create file
-func FileCreate(content bytes.Buffer, name string) error {
-	file, err := os.Create(name)
+func FileCreate(content bytes.Buffer, name string, mode os.FileMode) error {
+	file, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, mode)
 	if err != nil {
 		log.Println(err)
 		return err
