@@ -66,7 +66,7 @@ func FileCopy(src, dst string) (int64, error) {
 	}
 	defer source.Close()
 
-	destination, err := os.Create(dst)
+	destination, err := os.OpenFile(dst, os.O_RDWR|os.O_CREATE|os.O_TRUNC, sourceFileStat.Mode())
 	if err != nil {
 		return 0, err
 	}
