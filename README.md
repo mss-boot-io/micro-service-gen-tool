@@ -10,34 +10,22 @@ https://github.com/lwnmengjing/template-demo
 - .templateparseignore: will scan, but not parse
 ### linux
 ```bazaar
-## linux
-curl -O https://whitematrixtech.github.io/micro-service-gen-tool/latest/linux_amd64.tar.gz
-## mac
-curl -O https://whitematrixtech.github.io/micro-service-gen-tool/latest/darwin_amd64.tar.gz
-##
-tar -zxvf linux_amd64.tar.gz
-## create config local
-cat >> config.yml <<eof
-service: proto-demo
-templateUrl: https://github.com/lwnmengjing/template-demo
-createRepo: false
-destination: ./
-params:
-  service: proto-demo
-eof
-## create config for github
-cat >> config.yml <<eof
-service: proto-demo
-templateUrl: https://github.com/lwnmengjing/tempate-demo
-createRepo: true
-destination: ./
-params:
-  service: proto-demo
-github:
-  token: {github_token}
-  description: description
-  organization: WhiteMatrixTech
-eof
-# generate code
-./generate-tool --config=config.yml
+generate-tool
+
+Usage:
+  generate-tool [flags]
+  generate-tool [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  install     Install generate-tool
+  run         Start generate project
+  update      Install generate-tool
+  version     Get version info
+
+Flags:
+  -h, --help   help for generate-tool
+
+Use "generate-tool [command] --help" for more information about a command.
 ```
