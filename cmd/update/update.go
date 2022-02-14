@@ -9,7 +9,7 @@ import (
 var (
 	StartCmd = &cobra.Command{
 		Use:     "update",
-		Short:   "Update generate-tool",
+		Short:   "Install generate-tool",
 		Example: "generate-tool update",
 		PreRun: func(cmd *cobra.Command, args []string) {
 
@@ -21,6 +21,6 @@ var (
 )
 
 func run() error {
-	pkg.Update()
+	pkg.Upgrade()
 	return nil
 }

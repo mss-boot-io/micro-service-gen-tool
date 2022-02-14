@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-// Update update generate-tool
-func Update() {
+// Install update generate-tool
+func Install() {
 	destPath := downloadLatest()
 	//复制文件到对应目录
 	copyStaticFile(destPath, "generate-tool")
-	fmt.Println("Update completed")
+	fmt.Println("Install completed")
 }
 
 // Upgrade check update
@@ -28,7 +28,7 @@ func Upgrade() {
 			upgrade = true
 		}
 		if upgrade {
-			Update()
+			Install()
 			os.Exit(0)
 		}
 	}

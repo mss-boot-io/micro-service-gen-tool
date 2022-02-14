@@ -21,6 +21,6 @@ var (
 )
 
 func run() error {
-	pkg.Update()
+	pkg.Install()
 	return nil
 }
