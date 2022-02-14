@@ -20,7 +20,7 @@ var (
 		Short:   "Start generate project",
 		Example: "generate-tool run",
 		PreRun: func(cmd *cobra.Command, args []string) {
-
+			pkg.Upgrade()
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return run()

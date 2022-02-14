@@ -58,7 +58,8 @@ type release struct {
 	TagName string `json:"tag_name"`
 }
 
-func downloadLatest() string {
+// GetLatestVersion get generate-tool version
+func GetLatestVersion() string {
 	// get version
 	data, err := http.Get("https://api.github.com/repos/WhiteMatrixTech/micro-service-gen-tool/releases/latest")
 	if err != nil {
@@ -69,8 +70,12 @@ func downloadLatest() string {
 		log.Fatal(err)
 	}
 	rl := new(release)
-	json.Unmarshal(b, &rl)
-	version := rl.TagName
+	_ = json.Unmarshal(b, &rl)
+	return rl.TagName
+}
+
+func downloadLatest() string {
+	version := GetLatestVersion()
 	fmt.Println("the latest version is", version)
 	filename := runtime.GOOS + "_" + runtime.GOARCH + ".tar.gz"
 	// download latest package
