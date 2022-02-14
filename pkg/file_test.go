@@ -15,7 +15,7 @@ func TestGetSubPath(t *testing.T) {
 		{
 			"test0",
 			"../example",
-			[]string{"clone", "scanf"},
+			[]string{"clone", "media", "scanf"},
 			false,
 		},
 	}

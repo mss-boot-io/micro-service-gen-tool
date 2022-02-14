@@ -79,7 +79,7 @@ func downloadLatest() string {
 	fmt.Println("the latest version is", version)
 	filename := runtime.GOOS + "_" + runtime.GOARCH + ".tar.gz"
 	// download latest package
-	downloadUrl := fmt.Sprintf("https://github.com/WhiteMatrixTech/micro-service-gen-tool/releases/download/%s/%s", version, filename)
+	downloadUrl := fmt.Sprintf("https://github.chainide.com/WhiteMatrixTech/micro-service-gen-tool/releases/download/%s/%s", version, filename)
 	fmt.Println("download package from ", downloadUrl)
 	resp, err := http.Get(downloadUrl)
 	if err != nil {

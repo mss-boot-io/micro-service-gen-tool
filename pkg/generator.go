@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"log"
+	"mime"
 	"os"
 	"path/filepath"
 	"strings"
@@ -220,6 +221,8 @@ func (e *Generator) TraverseFunc(path string, f os.DirEntry, err error) error {
 			}
 		}
 	}
+	//media file type
+	mime.TypeByExtension(filepath.Ext(path))
 	if parseIgnore {
 		_, err = FileCopy(templatePath, path)
 		if err != nil {
