@@ -59,6 +59,7 @@ jobs:
             export app=generate-tool
           fi
           go build -o ${app} .
+          chmod +x ${app}
           tar -zcvf ${GOOS}_${GOARCH}.tar.gz ./${app}
           rm -rf ./${app}
           mv ${GOOS}_${GOARCH}.tar.gz artifact

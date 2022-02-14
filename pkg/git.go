@@ -9,12 +9,12 @@ package pkg
 
 import (
 	"context"
-	"github.com/go-git/go-git/v5/plumbing"
 	"log"
 	"os"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/google/go-github/v41/github"
