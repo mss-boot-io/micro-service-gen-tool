@@ -30,7 +30,7 @@ var (
 )
 
 func run() error {
-	//log.SetFlags(log.Lshortfile | log.LstdFlags)
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
 	var err error
 	//var repo string
 	repo := defaultTemplate
@@ -92,7 +92,7 @@ SUBPATH:
 	projectName := "default"
 	fmt.Printf("project name(default:%s)", pkg.Yellow(projectName))
 	_, _ = fmt.Scanf("%s", &projectName)
-	keys, err := pkg.GetParseFromTemplate(filepath.Join(templateWorkspace, subPath))
+	keys, err := pkg.GetParseFromTemplate(templateWorkspace, subPath)
 	if err != nil {
 		log.Fatalln(err)
 	}

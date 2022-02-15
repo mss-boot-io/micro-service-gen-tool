@@ -239,6 +239,7 @@ func (e *Generator) TraverseFunc(path string, f os.DirEntry, err error) error {
 	t = template.New(path + "[file]")
 	t = template.Must(t.Parse(string(rb)))
 	if err = t.Execute(&buffer, e.Cfg); err != nil {
+		log.Printf("path %s parse error\n", templatePath)
 		log.Println(err)
 		return err
 	}

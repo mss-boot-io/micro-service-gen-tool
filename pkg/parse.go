@@ -37,9 +37,14 @@ func getParseKeys(nodes *parse.ListNode) []string {
 }
 
 // GetParseFromTemplate get parse keys from template
-func GetParseFromTemplate(dir string) (map[string]string, error) {
+func GetParseFromTemplate(dir, subPath string) (map[string]string, error) {
 	keys := make(map[string]string, 0)
-	templateResultIgnore, err := xignore.DirMatches(filepath.Join(dir, TemplateIgnore),
+	ignoreDirs := make([]string, 0)
+	ignoreFiles := make([]string, 0)
+	var allPath bool
+	var baseDir string
+AGAIN:
+	templateResultIgnore, err := xignore.DirMatches(dir,
 		&xignore.MatchesOptions{
 			Ignorefile: TemplateIgnore,
 			Nested:     true, // Handle nested ignorefile
@@ -48,7 +53,7 @@ func GetParseFromTemplate(dir string) (map[string]string, error) {
 		log.Println(err)
 		return nil, err
 	}
-	templateParseResultIgnore, err := xignore.DirMatches(filepath.Join(dir, TemplateParseIgnore),
+	templateParseResultIgnore, err := xignore.DirMatches(dir,
 		&xignore.MatchesOptions{
 			Ignorefile: TemplateParseIgnore,
 			Nested:     true,
@@ -57,37 +62,45 @@ func GetParseFromTemplate(dir string) (map[string]string, error) {
 		log.Println(err)
 		return nil, err
 	}
-	ignoreDirs := make([]string, 0)
-	ignoreFiles := make([]string, 0)
 	if templateResultIgnore != nil {
-		ignoreDirs = templateResultIgnore.MatchedDirs
-		ignoreFiles = templateResultIgnore.MatchedFiles
+		ignoreDirs = append(ignoreDirs, templateResultIgnore.MatchedDirs...)
+		ignoreFiles = append(ignoreFiles, templateResultIgnore.MatchedFiles...)
 	}
 	if templateParseResultIgnore != nil {
-		ignoreDirs = templateParseResultIgnore.MatchedDirs
-		ignoreFiles = templateParseResultIgnore.MatchedFiles
+		ignoreDirs = append(ignoreDirs, templateParseResultIgnore.MatchedDirs...)
+		ignoreFiles = append(ignoreFiles, templateParseResultIgnore.MatchedFiles...)
 	}
-	err = filepath.WalkDir(dir, parseTraverse(dir, keys, ignoreDirs, ignoreFiles))
+	if !allPath {
+		baseDir = dir
+		dir = filepath.Join(dir, subPath)
+		allPath = true
+		goto AGAIN
+	}
+	dir = baseDir
+	err = filepath.WalkDir(filepath.Join(dir, subPath), parseTraverse(dir, subPath, keys, ignoreDirs, ignoreFiles))
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	return keys, nil
 }
 
-func parseTraverse(dir string, keys map[string]string, ignoreDirs, ignoreFiles []string) fs.WalkDirFunc {
+func parseTraverse(dir, subPath string, keys map[string]string, ignoreDirs, ignoreFiles []string) fs.WalkDirFunc {
 	if keys == nil {
 		keys = make(map[string]string)
 	}
 	return func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
 			for i := range ignoreDirs {
-				if strings.Index(path, filepath.Join(dir, ignoreDirs[i])) == 0 {
+				if strings.Index(path, filepath.Join(dir, ignoreDirs[i])) == 0 ||
+					strings.Index(path, filepath.Join(dir, subPath, ignoreDirs[i])) == 0 {
 					return nil
 				}
 			}
 		} else {
 			for i := range ignoreFiles {
-				if filepath.Join(dir, ignoreFiles[i]) == path {
+				if filepath.Join(dir, ignoreFiles[i]) == path ||
+					filepath.Join(dir, subPath, ignoreFiles[i]) == path {
 					return nil
 				}
 			}
@@ -95,6 +108,7 @@ func parseTraverse(dir string, keys map[string]string, ignoreDirs, ignoreFiles [
 		{
 			tree, err := parse.Parse("path", path, "{{", "}}")
 			if err != nil {
+				log.Println(err)
 				return err
 			}
 			if tree == nil {
@@ -109,11 +123,14 @@ func parseTraverse(dir string, keys map[string]string, ignoreDirs, ignoreFiles [
 		}
 		rb, err := ioutil.ReadFile(path)
 		if err != nil {
+			log.Println(err)
 			return err
 		}
 		{
 			tree, err := parse.Parse("file", string(rb), "{{", "}}")
 			if err != nil {
+				log.Printf("path(%s)'s context error\n", path)
+				log.Println(err)
 				return err
 			}
 			if tree == nil {
