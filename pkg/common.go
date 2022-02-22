@@ -61,7 +61,7 @@ type release struct {
 // GetLatestVersion get generate-tool version
 func GetLatestVersion() string {
 	// get version
-	data, err := http.Get("https://api.github.com/repos/WhiteMatrixTech/micro-service-gen-tool/releases/latest")
+	data, err := http.Get("https://api.github.com/repos/mss-boot-io/micro-service-gen-tool/releases/latest")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
