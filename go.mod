@@ -1,4 +1,4 @@
-module github.com/lwnmengjing/micro-service-gen-tool
+module github.com/mss-boot-io/micro-service-gen-tool
 
 go 1.17
 

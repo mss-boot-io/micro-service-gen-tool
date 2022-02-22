@@ -2,11 +2,11 @@ package version
 
 import "fmt"
 
-const Version = "v0.1.0"
+const Version = "v0.1.2"
 
 // getVersion Compulsory minimum version, Minimum downward compatibility to this version
 func getVersion() string {
-	return "v0.1.0"
+	return Version
 }
 
 // PrintVersion print currently version info

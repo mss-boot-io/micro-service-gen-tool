@@ -3,8 +3,8 @@ package version
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/lwnmengjing/micro-service-gen-tool/pkg"
-	"github.com/lwnmengjing/micro-service-gen-tool/version"
+	"github.com/mss-boot-io/micro-service-gen-tool/pkg"
+	"github.com/mss-boot-io/micro-service-gen-tool/version"
 )
 
 var (

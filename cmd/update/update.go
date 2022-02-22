@@ -3,7 +3,7 @@ package update
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/lwnmengjing/micro-service-gen-tool/pkg"
+	"github.com/mss-boot-io/micro-service-gen-tool/pkg"
 )
 
 var (

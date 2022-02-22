@@ -7,12 +7,12 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/lwnmengjing/micro-service-gen-tool/cmd/install"
-	"github.com/lwnmengjing/micro-service-gen-tool/cmd/run"
-	"github.com/lwnmengjing/micro-service-gen-tool/cmd/update"
-	"github.com/lwnmengjing/micro-service-gen-tool/cmd/version"
-	"github.com/lwnmengjing/micro-service-gen-tool/pkg"
-	v "github.com/lwnmengjing/micro-service-gen-tool/version"
+	"github.com/mss-boot-io/micro-service-gen-tool/cmd/install"
+	"github.com/mss-boot-io/micro-service-gen-tool/cmd/run"
+	"github.com/mss-boot-io/micro-service-gen-tool/cmd/update"
+	"github.com/mss-boot-io/micro-service-gen-tool/cmd/version"
+	"github.com/mss-boot-io/micro-service-gen-tool/pkg"
+	v "github.com/mss-boot-io/micro-service-gen-tool/version"
 )
 
 var rootCmd = &cobra.Command{
