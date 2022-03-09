@@ -13,7 +13,7 @@ var (
 		Short:   "Get version info",
 		Example: "generate-tool version",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			pkg.Upgrade()
+			pkg.Upgrade(true)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return run()

@@ -16,16 +16,20 @@ func Install() {
 }
 
 // Upgrade check update
-func Upgrade() {
+func Upgrade(ask bool) {
 	if GetLatestVersion() != version.Version {
 		//need update
 		fmt.Printf("do you need to upgrade[%s]: ", Yellow("y/n"))
 		var upgrade bool
-		var input string
-		_, _ = fmt.Scan(&input)
-		switch strings.ToLower(input) {
-		case "y", "yes", "t", "true":
+		if !ask {
 			upgrade = true
+		} else {
+			var input string
+			_, _ = fmt.Scan(&input)
+			switch strings.ToLower(input) {
+			case "y", "yes", "t", "true":
+				upgrade = true
+			}
 		}
 		if upgrade {
 			Install()

@@ -20,7 +20,7 @@ var (
 		Short:   "Start generate project",
 		Example: "generate-tool run",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			pkg.Upgrade()
+			pkg.Upgrade(true)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return run()
@@ -56,6 +56,7 @@ func run() error {
 	fmt.Printf("private pem password(default:%s): ", pkg.Yellow("''"))
 	_, _ = fmt.Scanf("%s", &password)
 	fmt.Printf("git clone start: %s \n", time.Now().String())
+	fmt.Println(privateKeyFile)
 	err = pkg.GitCloneSSH(repo, templateWorkspace, branch, privateKeyFile, password)
 	if err != nil {
 		log.Fatalln(err)

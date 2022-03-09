@@ -96,19 +96,16 @@ func copyStaticFile(srcPath, bin string) string {
 	defer os.RemoveAll(srcPath)
 	binPath, _ := filepath.Abs(os.Args[0])
 	if !IsWindows() {
-		if _, err := copyFile(filepath.Join(srcPath, bin), "/usr/bin/"+bin); err != nil {
-			if _, err := copyFile(filepath.Join(srcPath, bin), "/usr/local/bin/"+bin); err != nil {
-				log.Fatalln(err)
-			} else {
-				copyFile(filepath.Join(srcPath, bin), "/usr/local/bin/"+bin+"-update")
-				chMod("/usr/local/bin/"+bin+"-update", 0755)
-				binPath = "/usr/local/bin/" + bin
-			}
+		if _, err := copyFile(
+			filepath.Join(srcPath, bin),
+			filepath.Join(os.Getenv("HOME"), ".local", "bin", bin)); err != nil {
+			log.Fatalln(err)
 		} else {
-			copyFile(filepath.Join(srcPath, bin), "/usr/bin/"+bin+"-update")
-			chMod("/usr/bin/"+bin+"-update", 0755)
-			binPath = "/usr/bin/" + bin
+			copyFile(filepath.Join(srcPath, bin), filepath.Join(os.Getenv("HOME"), ".local", "bin", bin+"-update"))
+			chMod(filepath.Join(os.Getenv("HOME"), ".local", "bin", bin+"-update"), 0755)
+			binPath = filepath.Join(os.Getenv("HOME"), ".local", "bin", bin)
 		}
+		fmt.Println("please add `export PATH=$PATH:$HOME/.local/bin` to $HOME/.zshrc or $HOME/.bashrc")
 	} else {
 		copyFile(filepath.Join(srcPath, bin+".exe"), filepath.Join(GetAppPath(), bin+"-update.exe"))
 		copyFile(filepath.Join(srcPath, bin+".exe"), filepath.Join(GetAppPath(), bin+".exe"))
