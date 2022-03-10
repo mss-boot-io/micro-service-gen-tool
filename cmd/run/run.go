@@ -21,6 +21,8 @@ var (
 		Example: "generate-tool run",
 		PreRun: func(cmd *cobra.Command, args []string) {
 			pkg.Upgrade(true)
+			pre()
+
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return run()
@@ -28,6 +30,12 @@ var (
 	}
 	defaultTemplate = "git@github.com:WhiteMatrixTech/matrix-microservice-template.git"
 )
+
+func pre() {
+	if os.Getenv("MICRO_DEFAULT_TEMPLATE") != "" {
+		defaultTemplate = os.Getenv("MICRO_DEFAULT_TEMPLATE")
+	}
+}
 
 func run() error {
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
