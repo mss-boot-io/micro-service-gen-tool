@@ -1,31 +1,31 @@
-# micro-service-gen-tool
-White Matrix Micro Service Generate CLI Tool
+# mss-boot-generator
+MSS-Boot Micro Service Generate CLI Tool
 
 ## usage
-### template demo
-https://github.com/lwnmengjing/template-demo
+### template set
+https://github.com/mss-boot-io/mss-boot-template
 
 ### ignore file
 - .templateignore: will not scan
 - .templateparseignore: will scan, but not parse
 ### linux
 ```bazaar
-generate-tool
+mss-boot-generator
 
 Usage:
-  generate-tool [flags]
-  generate-tool [command]
+  mss-boot-generator [flags]
+  mss-boot-generator [command]
 
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
-  install     Install generate-tool
+  install     Install mss-boot-generator
   run         Start generate project
-  update      Install generate-tool
+  update      Install mss-boot-generator
   version     Get version info
 
 Flags:
-  -h, --help   help for generate-tool
+  -h, --help   help for mss-boot-generator
 
-Use "generate-tool [command] --help" for more information about a command.
+Use "mss-boot-generator [command] --help" for more information about a command.
 ```
