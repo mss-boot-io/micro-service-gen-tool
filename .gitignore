@@ -53,7 +53,7 @@ hs_err_pid*
 *White*
 workspace
 src
-generate-tool
+mss-boot-generator
 
 ### config local ###
 *-dev.yaml
@@ -64,3 +64,6 @@ generate-tool
 ### demo template ###
 *demo*
 default
+
+### version ###
+version/version

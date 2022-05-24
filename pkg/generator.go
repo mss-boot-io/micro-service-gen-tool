@@ -9,6 +9,8 @@ package pkg
 
 import (
 	"bytes"
+	"fmt"
+	"github.com/mss-boot-io/mss-boot-generator/temp_func"
 	"io/ioutil"
 	"log"
 	"mime"
@@ -61,7 +63,7 @@ func Generate(c *TemplateConfig) (err error) {
 		c.Github = nil
 	}
 	//delete destinationPath
-	_ = os.RemoveAll(c.Destination)
+	//_ = os.RemoveAll(c.Destination)
 
 	t := &Generator{
 		SubPath:                  c.Service,
@@ -187,7 +189,7 @@ func (e *Generator) TraverseFunc(path string, f os.DirEntry, err error) error {
 		}
 	}
 	templatePath := path
-	t := template.New(path)
+	t := template.New(path).Funcs(temp_func.DefaultFuncMap)
 	t = template.Must(t.Parse(path))
 	var buffer bytes.Buffer
 	if err = t.Execute(&buffer, e.Cfg); err != nil {
@@ -236,7 +238,8 @@ func (e *Generator) TraverseFunc(path string, f os.DirEntry, err error) error {
 		return err
 	}
 	buffer = bytes.Buffer{}
-	t = template.New(path + "[file]")
+	fmt.Println(templatePath)
+	t = template.New(path + "[file]").Funcs(temp_func.DefaultFuncMap)
 	t = template.Must(t.Parse(string(rb)))
 	if err = t.Execute(&buffer, e.Cfg); err != nil {
 		log.Printf("path %s parse error\n", templatePath)

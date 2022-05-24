@@ -7,19 +7,19 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/mss-boot-io/micro-service-gen-tool/cmd/install"
-	"github.com/mss-boot-io/micro-service-gen-tool/cmd/run"
-	"github.com/mss-boot-io/micro-service-gen-tool/cmd/update"
-	"github.com/mss-boot-io/micro-service-gen-tool/cmd/version"
-	"github.com/mss-boot-io/micro-service-gen-tool/pkg"
-	v "github.com/mss-boot-io/micro-service-gen-tool/version"
+	"github.com/mss-boot-io/mss-boot-generator/cmd/install"
+	"github.com/mss-boot-io/mss-boot-generator/cmd/run"
+	"github.com/mss-boot-io/mss-boot-generator/cmd/update"
+	"github.com/mss-boot-io/mss-boot-generator/cmd/version"
+	"github.com/mss-boot-io/mss-boot-generator/pkg"
+	v "github.com/mss-boot-io/mss-boot-generator/version"
 )
 
 var rootCmd = &cobra.Command{
-	Use:          "generate-tool",
-	Short:        "generate-tool",
+	Use:          "mss-boot-generator",
+	Short:        "mss-boot-generator",
 	SilenceUsage: true,
-	Long:         `generate-tool`,
+	Long:         `mss-boot-generator`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			tip()
@@ -34,7 +34,7 @@ var rootCmd = &cobra.Command{
 }
 
 func tip() {
-	usageStr := `欢迎使用 ` + pkg.Green(`generate-tool `+v.Version) + ` 可以使用 ` + pkg.Red(`-h`) + ` 查看命令`
+	usageStr := `欢迎使用 ` + pkg.Green(`mss-boot-generator `+v.Version) + ` 可以使用 ` + pkg.Red(`-h`) + ` 查看命令`
 	fmt.Printf("%s\n", usageStr)
 }
 

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/mss-boot-io/micro-service-gen-tool/cmd"
+import "github.com/mss-boot-io/mss-boot-generator/cmd"
 
 func main() {
 	cmd.Execute()

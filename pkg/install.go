@@ -2,16 +2,16 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/mss-boot-io/micro-service-gen-tool/version"
+	"github.com/mss-boot-io/mss-boot-generator/version"
 	"os"
 	"strings"
 )
 
-// Install update generate-tool
+// Install update mss-boot-generator
 func Install() {
 	destPath := downloadLatest()
 	//复制文件到对应目录
-	copyStaticFile(destPath, "generate-tool")
+	copyStaticFile(destPath, "mss-boot-generator")
 	fmt.Println("Install completed")
 }
 

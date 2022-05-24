@@ -58,10 +58,10 @@ type release struct {
 	TagName string `json:"tag_name"`
 }
 
-// GetLatestVersion get generate-tool version
+// GetLatestVersion get mss-boot-generator version
 func GetLatestVersion() string {
 	// get version
-	data, err := http.Get("https://api.github.com/repos/WhiteMatrixTech/micro-service-gen-tool/releases/latest")
+	data, err := http.Get("https://api.github.com/repos/mss-boot-io/mss-boot-generator/releases/latest")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -79,7 +79,7 @@ func downloadLatest() string {
 	fmt.Println("the latest version is", version)
 	filename := runtime.GOOS + "_" + runtime.GOARCH + ".tar.gz"
 	// download latest package
-	downloadUrl := fmt.Sprintf("https://github.chainide.com/WhiteMatrixTech/micro-service-gen-tool/releases/download/%s/%s", version, filename)
+	downloadUrl := fmt.Sprintf("https://github.chainide.com/mss-boot-io/mss-boot-generator/releases/download/%s/%s", version, filename)
 	fmt.Println("download package from ", downloadUrl)
 	resp, err := http.Get(downloadUrl)
 	if err != nil {

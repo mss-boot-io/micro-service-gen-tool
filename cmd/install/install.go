@@ -3,14 +3,14 @@ package install
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/mss-boot-io/micro-service-gen-tool/pkg"
+	"github.com/mss-boot-io/mss-boot-generator/pkg"
 )
 
 var (
 	StartCmd = &cobra.Command{
 		Use:     "install",
-		Short:   "Install generate-tool",
-		Example: "generate-tool install",
+		Short:   "Install mss-boot-generator",
+		Example: "mss-boot-generator install",
 		PreRun: func(cmd *cobra.Command, args []string) {
 
 		},

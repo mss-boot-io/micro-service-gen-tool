@@ -6,21 +6,21 @@ on:
       - 'v*'
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.17'
-      - name: Tidy
-        run: go mod tidy
-      - name: Test
-        run: go test -v ./...
+#  test:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Setup
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: '1.17'
+#      - name: Tidy
+#        run: go mod tidy
+#      - name: Test
+#        run: go test -v ./...
   tag:
     runs-on: ubuntu-latest
-    needs: test
+#    needs: test
     if: startsWith(github.ref, 'refs/tags/')
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
@@ -53,10 +53,11 @@ jobs:
           GOOS: ${{ matrix.os }}
           GOARCH: amd64
         run: |
+          echo ${{ needs.tag.outputs.tag }} > version/version
           if [ ${GOOS} == windows ];then
-            export app=generate-tool.exe
+            export app=mss-boot-generator.exe
           else
-            export app=generate-tool
+            export app=mss-boot-generator
           fi
           go build -o ${app} .
           chmod +x ${app}

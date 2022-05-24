@@ -2,7 +2,21 @@ package version
 
 import "fmt"
 
-const Version = "v0.1.3"
+import "embed"
+
+// Embedded contains embedded scripts.
+//go:embed *
+var Embedded embed.FS
+
+var Version = setVersion()
+
+func setVersion() string {
+	rb, err := Embedded.ReadFile("version")
+	if err != nil {
+		return "v0.0.0"
+	}
+	return string(rb)
+}
 
 // getVersion Compulsory minimum version, Minimum downward compatibility to this version
 func getVersion() string {
@@ -11,5 +25,5 @@ func getVersion() string {
 
 // PrintVersion print currently version info
 func PrintVersion() {
-	fmt.Printf("Version: %s\nCore version: %s\nSame core version of generate-tool\n", Version, getVersion())
+	fmt.Printf("Version: %s\nCore version: %s\nSame core version of mss-boot-generator\n", Version, getVersion())
 }

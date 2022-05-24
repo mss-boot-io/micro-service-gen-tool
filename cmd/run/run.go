@@ -3,6 +3,8 @@ package run
 import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,14 +14,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 
-	"github.com/mss-boot-io/micro-service-gen-tool/pkg"
+	"github.com/mss-boot-io/mss-boot-generator/pkg"
 )
 
 var (
-	StartCmd = &cobra.Command{
+	configFile string
+	StartCmd   = &cobra.Command{
 		Use:     "run",
 		Short:   "Start generate project",
-		Example: "generate-tool run",
+		Example: "mss-boot-generator run",
 		PreRun: func(cmd *cobra.Command, args []string) {
 			pkg.Upgrade(true)
 			pre()
@@ -35,6 +38,10 @@ var (
 	// If using repoGitCloneViaDeployerAccount, use this value
 	defaultTemplate = "https://github.com/WhiteMatrixTech/matrix-microservice-template.git"
 )
+
+func init() {
+	StartCmd.Flags().StringVarP(&configFile, "config", "c", "", "config file")
+}
 
 func pre() {
 	if os.Getenv("MICRO_DEFAULT_TEMPLATE") != "" {
@@ -139,25 +146,38 @@ SUBPATH:
 		goto SUBPATH
 	}
 	projectName := "default"
-	fmt.Printf("project name(default:%s)", pkg.Yellow(projectName))
+	fmt.Printf("project name(default:%s): ", pkg.Yellow(projectName))
 	_, _ = fmt.Scanf("%s", &projectName)
-	keys, err := pkg.GetParseFromTemplate(templateWorkspace, subPath)
-	if err != nil {
-		log.Fatalln(err)
+	params := make(map[string]interface{})
+	if configFile != "" {
+		rb, err := ioutil.ReadFile(configFile)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		err = yaml.Unmarshal(rb, &params)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		params["service"] = projectName
+	} else {
+		keys, err := pkg.GetParseFromTemplate(templateWorkspace, subPath)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		for key := range keys {
+			var value string
+		BACK:
+			fmt.Printf("%s: ", pkg.Yellow(key))
+			_, _ = fmt.Scanf("%s", &value)
+			if value == "" {
+				goto BACK
+			}
+			keys[key] = value
+			params[key] = value
+		}
 	}
 
 	fmt.Println(pkg.Magenta("please config your param's value"))
-
-	for key := range keys {
-		var value string
-	BACK:
-		fmt.Printf("%s: ", pkg.Yellow(key))
-		_, _ = fmt.Scanf("%s", &value)
-		if value == "" {
-			goto BACK
-		}
-		keys[key] = value
-	}
 
 	err = pkg.Generate(&pkg.TemplateConfig{
 		Service:       subPath,
@@ -165,7 +185,7 @@ SUBPATH:
 		CreateRepo:    false,
 		Destination:   filepath.Join(".", projectName),
 		Github:        nil,
-		Params:        keys,
+		Params:        params,
 		Ignore:        nil,
 	})
 	if err != nil {
